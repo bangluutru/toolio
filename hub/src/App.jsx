@@ -609,6 +609,13 @@ export default function App() {
             <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-2 flex-wrap justify-center font-label-sm text-xs">
                 <span className="font-bold text-on-surface">Toolio</span>
+                <span>•</span>
+                <a
+                  href="https://chottoday.com"
+                  className="text-on-surface-variant hover:text-primary transition-colors underline decoration-border-subtle underline-offset-4"
+                >
+                  ChottoDay
+                </a>
                 <span className="text-on-surface-variant/80 font-normal hidden sm:inline">— Tiny Tools. Huge Impact.</span>
                 <span>•</span>
                 <span className="text-secondary font-semibold">Beta có kiểm soát</span>

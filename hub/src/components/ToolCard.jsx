@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { renderToolIcon } from '../config/toolIcons.js';
+import { toolPath } from '../utils/navigation';
 
 /**
  * ToolCard — Thẻ hiển thị miniapp của Toolio
@@ -30,18 +31,20 @@ export default function ToolCard({
     return tool.desc_vn;
   };
 
-  const handleClick = () => {
-    if (!isDisabled && onSelectTool) {
-      onSelectTool(tool.id);
-    }
+  // Thẻ là liên kết <a href> thật để Google đi theo được. Trước đây thẻ chỉ là
+  // một phần tử có role="button" gắn onClick, nên sau khi JS chạy cả trang chủ
+  // chỉ còn một liên kết (tới GitHub). Click thường vẫn đi qua onSelectTool
+  // (nhớ ngữ cảnh duyệt); Ctrl/Cmd-click và chuột giữa để trình duyệt xử lý
+  // như link bình thường.
+  const handleClick = (e) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    onSelectTool?.(tool.id);
   };
 
-  const handleKeyDown = (e) => {
-    if ((e.key === 'Enter' || e.key === ' ') && !isDisabled && onSelectTool) {
-      e.preventDefault();
-      onSelectTool(tool.id);
-    }
-  };
+  // Công cụ "đang phát triển" chưa có trang thật nên không được là liên kết.
+  const Root = isDisabled ? 'article' : 'a';
+  const rootProps = isDisabled ? {} : { href: toolPath(tool.id), onClick: handleClick };
 
   // Tone màu chủ đạo của icon miniapp
   const iconColor = tool.color || '#0284c7';
@@ -73,11 +76,8 @@ export default function ToolCard({
   // =========================================================================
   if (variant === 'compact-list') {
     return (
-      <article
-        role="button"
-        tabIndex={isDisabled ? -1 : 0}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
+      <Root
+        {...rootProps}
         className={`flex items-center justify-between gap-3.5 p-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high border border-border-subtle hover:border-primary-container/50 transition-all duration-150 shadow-2xs group select-none outline-none focus-visible:ring-2 focus-visible:ring-primary ${
           isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-[0.99]'
         }`}
@@ -117,7 +117,7 @@ export default function ToolCard({
         <div className="shrink-0 text-outline group-hover:text-primary group-hover:translate-x-0.5 transition-all">
           <ChevronRight size={18} />
         </div>
-      </article>
+      </Root>
     );
   }
 
@@ -125,12 +125,9 @@ export default function ToolCard({
   // BIẾN THỂ 2: GRID CARD (CHUẨN 4 CỘT TINH GỌN CHO DESKTOP / TABLET)
   // =========================================================================
   return (
-    <article
+    <Root
+      {...rootProps}
       data-category={tool.category}
-      role="button"
-      tabIndex={isDisabled ? -1 : 0}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
       className={`tool-card flex flex-col justify-between p-3.5 sm:p-4 rounded-xl bg-surface-container hover:bg-surface-container-high border border-border-subtle hover:border-primary-container/50 transition-all duration-200 shadow-2xs hover:shadow-sm group relative overflow-hidden select-none outline-none focus-visible:ring-2 focus-visible:ring-primary ${
         isDisabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
       }`}
@@ -193,6 +190,6 @@ export default function ToolCard({
           )}
         </span>
       </div>
-    </article>
+    </Root>
   );
 }
