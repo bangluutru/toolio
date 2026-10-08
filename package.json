@@ -40,7 +40,7 @@
   },
   "overrides": {
     "pdfjs-dist": "6.2.108",
-    "sharp": "0.35.4",
+    "sharp": "0.35.5",
     "@xmldom/xmldom": "0.9.12"
   }
 }
