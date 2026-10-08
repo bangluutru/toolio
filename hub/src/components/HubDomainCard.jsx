@@ -5,6 +5,7 @@ import {
   SakuraIcon,
   LotusIcon,
 } from '../assets/illustrations/DomainIcons.jsx';
+import { buildDomainPath } from '../utils/navigation';
 
 /**
  * HubDomainCard — Thẻ đại diện 3 nhóm công cụ chính của Toolio
@@ -95,19 +96,17 @@ export default function HubDomainCard({
 
   const style = getStyleTokens();
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onSelect?.(id);
-    }
+  // <a href> thật để Google đi theo được; click thường vẫn qua onSelect.
+  const handleClick = (e) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    onSelect?.(id);
   };
 
   return (
-    <article
-      role="button"
-      tabIndex={0}
-      onClick={() => onSelect?.(id)}
-      onKeyDown={handleKeyDown}
+    <a
+      href={buildDomainPath(id, 'all')}
+      onClick={handleClick}
       className={`group relative flex flex-col justify-between p-5 sm:p-6 rounded-2xl ${style.cardBg} border ${style.cardBorder} transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer overflow-hidden select-none outline-none focus-visible:ring-2 focus-visible:ring-primary`}
       aria-label={`${title} - ${subtitle}`}
     >
@@ -152,6 +151,6 @@ export default function HubDomainCard({
           <ChevronRight size={12} />
         </span>
       </div>
-    </article>
+    </a>
   );
 }
