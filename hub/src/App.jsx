@@ -4,7 +4,7 @@ import ToolCard from './components/ToolCard';
 import ToolContainer from './components/ToolContainer';
 import ToolErrorBoundary from './components/ToolErrorBoundary';
 import CommandPalette from './components/CommandPalette';
-import DataPolicyModal from './components/DataPolicyModal';
+import DataPolicyModal, { CONTACT_EMAIL } from './components/DataPolicyModal';
 import SettingsModal from './components/SettingsModal';
 import HubDomainCard from './components/HubDomainCard';
 import DomainCatalogue from './components/DomainCatalogue';
@@ -184,7 +184,8 @@ export default function App() {
   const setSearchQuery = search.setQuery;
   const searchInputRef = useRef(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isPolicyOpen, setIsPolicyOpen] = useState(false);
+  // null = đóng; 'privacy' | 'about' | 'terms' = đang mở trang đó.
+  const [legalKind, setLegalKind] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [hiddenToolIds, setHiddenToolIds] = useState(() =>
     loadHiddenToolIds(window.localStorage, tools)
@@ -622,14 +623,34 @@ export default function App() {
                 <span>•</span>
                 <span className="font-mono">Build {buildVersion}</span>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
                 <button
                   type="button"
-                  onClick={() => setIsPolicyOpen(true)}
+                  onClick={() => setLegalKind('about')}
+                  className="font-body-sm text-xs text-on-surface-variant hover:text-primary transition-colors underline decoration-border-subtle underline-offset-4 cursor-pointer"
+                >
+                  {displayLang === 'ja' ? 'Toolioについて' : displayLang === 'en' ? 'About' : 'Giới thiệu'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLegalKind('privacy')}
                   className="font-body-sm text-xs text-on-surface-variant hover:text-primary transition-colors underline decoration-border-subtle underline-offset-4 cursor-pointer"
                 >
                   {displayLang === 'ja' ? 'データ処理方針' : displayLang === 'en' ? 'Data Policy' : 'Chính sách dữ liệu'}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setLegalKind('terms')}
+                  className="font-body-sm text-xs text-on-surface-variant hover:text-primary transition-colors underline decoration-border-subtle underline-offset-4 cursor-pointer"
+                >
+                  {displayLang === 'ja' ? '利用規約' : displayLang === 'en' ? 'Terms' : 'Điều khoản'}
+                </button>
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="font-body-sm text-xs text-on-surface-variant hover:text-primary transition-colors underline decoration-border-subtle underline-offset-4 cursor-pointer"
+                >
+                  {displayLang === 'ja' ? 'お問い合わせ' : displayLang === 'en' ? 'Contact' : 'Liên hệ'}
+                </a>
                 <button
                   type="button"
                   onClick={() => setIsSettingsOpen(true)}
@@ -651,7 +672,7 @@ export default function App() {
         displayLang={displayLang}
         tools={activeTools}
       />
-      <DataPolicyModal isOpen={isPolicyOpen} onClose={() => setIsPolicyOpen(false)} />
+      <DataPolicyModal isOpen={legalKind !== null} kind={legalKind ?? 'privacy'} onClose={() => setLegalKind(null)} />
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
